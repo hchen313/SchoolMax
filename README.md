@@ -1,6 +1,8 @@
 # SchoolMax
 A Discord SchoolMax Bot that logins to SchoolMax, list all the classes, and check one's grade.
 
+To add SchoolMax bot to your server: https://discord.com/api/oauth2/authorize?client_id=846623220954169384&permissions=8&scope=bot
+
 Commands: 
   1. -command
   2. -login
