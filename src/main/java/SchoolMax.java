@@ -1,6 +1,7 @@
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import java.io.IOException;
+
+import java.io.*;
 
 public class SchoolMax{
 
@@ -66,5 +67,30 @@ public class SchoolMax{
     public void close() throws IOException {
         HtmlAnchor closeButton = (HtmlAnchor) page.getAnchorByText("Logout");
         closeButton.click();
+    }
+
+    public String checkNextYear() throws IOException {
+        HtmlAnchor change = (HtmlAnchor) page.getAnchorByText("change");
+        page = change.click();
+        HtmlInput input = page.getFirstByXPath("//*[@id=\"field_year3\"]");
+        input.setValueAttribute("2022");
+        HtmlSubmitInput button = (HtmlSubmitInput) page.getFirstByXPath("//*[@id=\"section_4\"]/tr[2]/td/input");
+        page = button.click();
+        HtmlAnchor courses = (HtmlAnchor) page.getAnchorByText("Student Course Choices");
+        page = courses.click();
+        String fullPage = page.getBody().getTextContent();
+        String firstCut = fullPage.substring(fullPage.indexOf("Your counselor"), fullPage.indexOf("Copyright"));
+
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(firstCut));
+        String line;
+        String secondCut = "";
+        while ((line = bufferedReader.readLine()) != null){
+            if(!line.trim().isEmpty()) {
+                secondCut = secondCut + line + "\n";
+            }
+        }
+        String thirdCut = secondCut.substring(secondCut.indexOf("Your"), secondCut.indexOf("document.q"));
+        String lastCut = thirdCut.replace(":", ":\n");
+        return lastCut;
     }
 }
