@@ -9,6 +9,7 @@ Commands:
   3. -list
   4. -check 
   5. -info
+  6. -NextYear
 
 Uses:
   * -command -> to show all the commands of the bot
@@ -19,7 +20,8 @@ Uses:
   * -check -> to check the term and overall grade of your class of choice by using the course number (provided by "-list" command)
       * Format: -check courseNumber
       * Example: -check 123141-3
-  * info -> to see all the information given by the developer
+  * -info -> to see all the information given by the developer
+  * -NextYear -> to check your next year's schedule
 
 
   Disclaimer: 
