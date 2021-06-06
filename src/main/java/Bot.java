@@ -31,7 +31,7 @@ public class Bot extends ListenerAdapter {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setColor(Color.blue);
             builder.setTitle("Commands");;
-            builder.setDescription("use ``-login + usernamne + password`` to login\n\tfor example: ``-login john-smith abc12345``\n\nuse ``-list`` to see all your classes and your course number\n\nuse ``-check + course number`` to check your grades for the class\n for example: ``-check 123141-3``");
+            builder.setDescription("use ``-login + usernamne + password`` to login\n\tfor example: ``-login john-smith abc12345``\n\nuse ``-list`` to see all your classes and your course number\n\nuse ``-check + course number`` to check your grades for the class\n for example: ``-check 123141-3``\n\nuse ``-NextYear`` to check your next year's schedule");
             e.getChannel().sendMessage(builder.build()).queue();
         }
 
@@ -39,7 +39,7 @@ public class Bot extends ListenerAdapter {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setColor(Color.blue);
             builder.setTitle("Disclaimer");;
-            builder.setDescription("``I do not keep your username and password``\n\n``Use at will``\n\n``Login message will be deleted after the message was sent so do not worry if anyone's gonna see your password``\n\n ``For your grades, private message will send to your dm, so no need to worry about your grade being exposed``");
+            builder.setDescription("``I do not keep your username and password``\n\n``Use the bot at your own will``\n\n``Login message will be deleted after the message was sent so do not worry if anyone's gonna see your password``\n\n ``For your grades, private message will send to your dm, so no need to worry about your grade being exposed``");
             e.getChannel().sendMessage(builder.build()).queue();
         }
         //login, saves data
@@ -200,6 +200,41 @@ public class Bot extends ListenerAdapter {
             msg.getChannel().sendMessage(builder.build()).queue();
         }
 
+        //add-on v-2.0
+
+        if(msg.getContentRaw().equals("-NextYear")){
+            //check if user is in the database, if not ask to login
+            boolean inData = inData((int) msg.getAuthor().getIdLong());
+            if(inData == false){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Please Log in");
+                msg.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
+            //retrieve id location in the id collection
+            int location = idLocation((int) msg.getAuthor().getIdLong());
+            if(location == -1){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Error");
+                msg.getChannel().sendMessage(builder.build()).queue();
+            }
+
+            try{
+                SchoolMax schoolMax = new SchoolMax();
+                schoolMax.login(usernameCollection[location], passwordCollection[location]);
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Schedule");
+                builder.setColor(Color.blue);
+                builder.setDescription(schoolMax.checkNextYear());
+                msg.getChannel().sendMessage(builder.build()).queue();
+
+            }catch (Exception exception){
+                exception.printStackTrace();
+            }
+        }
 
     }
     //to check the format is right for login
