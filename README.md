@@ -10,6 +10,8 @@ Commands:
   4. -check 
   5. -info
   6. -NextYear
+  7. -getAllQuarter
+  8. -getAll
 
 Uses:
   * -command -> to show all the commands of the bot
@@ -22,6 +24,8 @@ Uses:
       * Example: -check 123141-3
   * -info -> to see all the information given by the developer
   * -NextYear -> to check your next year's schedule
+  * to get your quarterly grade for all your classes
+  * to get your overall grade for all your classes
 
 
   Disclaimer: 
