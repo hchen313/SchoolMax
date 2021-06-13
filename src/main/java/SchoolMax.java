@@ -1,7 +1,11 @@
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 
+import javax.lang.model.type.ArrayType;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class SchoolMax{
 
@@ -92,5 +96,152 @@ public class SchoolMax{
         String thirdCut = secondCut.substring(secondCut.indexOf("Your"), secondCut.indexOf("document.q"));
         String lastCut = thirdCut.replace(":", ":\n");
         return lastCut;
+    }
+
+    public ArrayList<String> checkAll() throws IOException {
+        //open gradebook
+        HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
+        page = gradeBook.click();
+
+        String all = page.getVisibleText();
+        String newAll = all.substring(all.indexOf("Instructor(s)") + 15, all.lastIndexOf("(primary)"));
+        String noGrade = newAll.replaceAll("\\[Grades]", "");
+        String noAssignment = noGrade.replaceAll("\\[Assignments]", "");
+        String noPrimary = noAssignment.replaceAll("\\(primary", "");
+        String noPar = noPrimary.replaceAll("\\)", "");
+
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(noPar));
+        String line;
+        ArrayList<String> classCode = new ArrayList<>();
+        while((line = bufferedReader.readLine()) != null){
+            if(line.length() != 0) {
+                int space = line.indexOf(" ");
+                classCode.add(line.substring(0, space));
+            }
+        }
+        for(int i = 0; i < classCode.size(); i++){
+            if(classCode.get(i).startsWith("L"))
+                classCode.remove(i);
+        }
+
+        ArrayList<String> allGrade = new ArrayList<>();
+        for(int i = 0; i < classCode.size(); i++){
+            try {
+                allGrade.add(this.grade(classCode.get(i)));
+            }catch (ElementNotFoundException ignore){}
+        }
+        return allGrade;
+    }
+
+    public String checkAllQuarter() throws IOException {
+        ArrayList<String> every = (ArrayList<String>) this.checkAll().clone();
+        for(int i = 0; i < every.size(); i++){
+            int first = every.get(i).indexOf("Period Weighted") + 27;
+            int last = every.get(i).lastIndexOf("Current") - 3;
+            every.set(i, every.get(i).substring(first, last));
+        }
+
+        //open gradebook
+        HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
+        page = gradeBook.click();
+
+        String all = page.getVisibleText();
+        String newAll = all.substring(all.indexOf("Instructor(s)") + 15, (all.lastIndexOf("(primary)") + 7)); //special +7 to include primar
+        String noGrade = newAll.replaceAll("\\[Grades]", "");
+        String noAssignment = noGrade.replaceAll("\\[Assignments]", "");
+        //String noPrimary = noAssignment.replaceAll("\\(primary", "");
+        //String noPar = noPrimary.replaceAll("\\)", "");
+        BufferedReader br = new BufferedReader(new StringReader(noAssignment));
+        String line;
+        ArrayList<String> allNames = new ArrayList<>();
+        while((line = br.readLine()) != null){
+            if(!(line.startsWith("LUNCH")) && line.contains("primar")){
+                if(!(line.trim().isEmpty())){
+                    if(!(line.contains("primary"))){   //to fix the primary problem
+                        line += "y)";
+                    }
+                    allNames.add(line);
+                }
+            }
+        }
+
+        int difference = 0;
+        if(allNames.size() != every.size()){
+            difference = Math.abs(allNames.size() - every.size());
+        }
+
+        while(difference != 0){
+            if(allNames.size() >= every.size()){
+                every.add("");
+            }else {
+                allNames.add("");
+            }
+            difference--;
+        }
+
+        for(int i = 0; i < allNames.size(); i++){
+            allNames.set(i, allNames.get(i) + ": " + every.get(i));
+        }
+        String all2 = "";
+        for(int i = 0; i < allNames.size(); i++){
+            all2 += allNames.get(i) + "\n\n";
+        }
+        return all2;
+    }
+
+    public String checkAllFY() throws IOException {
+        ArrayList<String> every = (ArrayList<String>) this.checkAll().clone();
+        for(int i = 0; i < every.size(); i++){
+            int first = every.get(i).indexOf(" Grade Weighted") + 27;
+            int last = every.get(i).indexOf("%") + 1;
+            every.set(i, every.get(i).substring(first, last));
+        }
+
+        //open gradebook
+        HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
+        page = gradeBook.click();
+
+        String all = page.getVisibleText();
+        String newAll = all.substring(all.indexOf("Instructor(s)") + 15, (all.lastIndexOf("(primary)") + 7)); //special +7 to include primar
+        String noGrade = newAll.replaceAll("\\[Grades]", "");
+        String noAssignment = noGrade.replaceAll("\\[Assignments]", "");
+        //String noPrimary = noAssignment.replaceAll("\\(primary", "");
+        //String noPar = noPrimary.replaceAll("\\)", "");
+        BufferedReader br = new BufferedReader(new StringReader(noAssignment));
+        String line;
+        ArrayList<String> allNames = new ArrayList<>();
+        while((line = br.readLine()) != null){
+            if(!(line.startsWith("LUNCH")) && line.contains("primar")){
+                if(!(line.trim().isEmpty())){
+                    if(!(line.contains("primary"))){   //to fix the primary problem
+                        line += "y)";
+                    }
+                    allNames.add(line);
+                }
+            }
+        }
+
+        int difference = 0;
+        if(allNames.size() != every.size()){
+            difference = Math.abs(allNames.size() - every.size());
+        }
+
+        while(difference != 0){
+            if(allNames.size() >= every.size()){
+                every.add("");
+            }else {
+                allNames.add("");
+            }
+            difference--;
+        }
+
+        for(int i = 0; i < allNames.size(); i++){
+            allNames.set(i, allNames.get(i) + ": " + every.get(i));
+        }
+        String all2 = "";
+        for(int i = 0; i < allNames.size(); i++){
+            all2 += allNames.get(i) + "\n\n";
+        }
+        return all2;
     }
 }
