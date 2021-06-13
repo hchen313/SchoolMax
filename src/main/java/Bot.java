@@ -1,3 +1,4 @@
+import jdk.internal.misc.ScopedMemoryAccess;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -11,12 +12,13 @@ import java.io.IOException;
 
 public class Bot extends ListenerAdapter {
 
-    final static String token = "";
+    final static String token = "ODQ2NjIzMjIwOTU0MTY5Mzg0.YKyNUQ.ek7RDWovzcqkJbCCGuCWwmU_DX0";
     private static int[] id = new int[1000];
     private static String[] usernameCollection = new String[1000];
     private static String[] passwordCollection = new String[1000];
     private static int count = 0;
     private static int checkedPeople = 0;
+    private static boolean login = false;
 
     public static void main(String[] args) throws LoginException {
         JDA jda = JDABuilder.createDefault(token).build();
@@ -26,12 +28,13 @@ public class Bot extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent e){
         if(e.getAuthor().isBot()){return;}
         Message msg = e.getMessage();
+        String userID = String.valueOf(e.getAuthor().getIdLong());
 
         if(msg.getContentRaw().equals("-command")){
             EmbedBuilder builder = new EmbedBuilder();
             builder.setColor(Color.blue);
             builder.setTitle("Commands");;
-            builder.setDescription("use ``-login + usernamne + password`` to login\n\tfor example: ``-login john-smith abc12345``\n\nuse ``-list`` to see all your classes and your course number\n\nuse ``-check + course number`` to check your grades for the class\n for example: ``-check 123141-3``\n\nuse ``-NextYear`` to check your next year's schedule");
+            builder.setDescription("use ``-login + usernamne + password`` to login\n\tfor example: ``-login john-smith abc12345``\n\nuse ``-list`` to see all your classes and your course number\n\nuse ``-check + course number`` to check your grades for the class\n for example: ``-check 123141-3``\n\nuse ``-NextYear`` to check your next year's schedule\n\nuse``-getAllQuarter`` to get your quarterly grade for all your classes\n\nuse``-getAll``to get your overall grade for all your classes");
             e.getChannel().sendMessage(builder.build()).queue();
         }
 
@@ -170,7 +173,6 @@ public class Bot extends ListenerAdapter {
                     builder.setColor(Color.red);
                     builder.setDescription("Class doesn't exist");
                     msg.getChannel().sendMessage(builder.build()).queue();
-
                 }
                 schoolMax.close();
             } catch (IOException ioException) {
@@ -200,8 +202,6 @@ public class Bot extends ListenerAdapter {
             msg.getChannel().sendMessage(builder.build()).queue();
         }
 
-        //add-on v-2.0
-
         if(msg.getContentRaw().equals("-NextYear")){
             //check if user is in the database, if not ask to login
             boolean inData = inData((int) msg.getAuthor().getIdLong());
@@ -230,12 +230,85 @@ public class Bot extends ListenerAdapter {
                 builder.setColor(Color.blue);
                 builder.setDescription(schoolMax.checkNextYear());
                 msg.getChannel().sendMessage(builder.build()).queue();
-
+                schoolMax.close();
             }catch (Exception exception){
                 exception.printStackTrace();
             }
         }
 
+        if(msg.getContentRaw().equals("-getAllQuarter")){
+            //check if user is in the database, if not ask to login
+            boolean inData = inData((int) msg.getAuthor().getIdLong());
+            if(inData == false){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Please Log in");
+                msg.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
+            //retrieve id location in the id collection
+            int location = idLocation((int) msg.getAuthor().getIdLong());
+            if(location == -1){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Error");
+                msg.getChannel().sendMessage(builder.build()).queue();
+            }
+
+            try{
+                SchoolMax schoolMax = new SchoolMax();
+                schoolMax.login(usernameCollection[location], passwordCollection[location]);
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Grades-Quarter");
+                builder.setColor(Color.blue);
+                builder.setDescription(schoolMax.checkAllQuarter());
+                User user = e.getAuthor();
+                user.openPrivateChannel().queue((channel) -> {
+                    channel.sendMessage(builder.build()).queue();
+                });
+                schoolMax.close();
+            }catch(Exception exception){
+                exception.printStackTrace();
+            }
+        }
+
+        if(msg.getContentRaw().equals("-getAll")){
+            //check if user is in the database, if not ask to login
+            boolean inData = inData((int) msg.getAuthor().getIdLong());
+            if(inData == false){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Please Log in");
+                msg.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
+            //retrieve id location in the id collection
+            int location = idLocation((int) msg.getAuthor().getIdLong());
+            if(location == -1){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Error");
+                msg.getChannel().sendMessage(builder.build()).queue();
+            }
+
+            try{
+                SchoolMax schoolMax = new SchoolMax();
+                schoolMax.login(usernameCollection[location], passwordCollection[location]);
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Grades-FY");
+                builder.setColor(Color.blue);
+                builder.setDescription(schoolMax.checkAllFY());
+                User user = e.getAuthor();
+                user.openPrivateChannel().queue((channel) -> {
+                    channel.sendMessage(builder.build()).queue();
+                });
+                schoolMax.close();
+            }catch(Exception exception){
+                exception.printStackTrace();
+            }
+        }
     }
     //to check the format is right for login
     private boolean enough(String message){
