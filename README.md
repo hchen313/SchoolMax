@@ -26,11 +26,3 @@ Uses:
   * -NextYear -> to check your next year's schedule
   * to get your quarterly grade for all your classes
   * to get your overall grade for all your classes
-
-
-  Disclaimer: 
-  * I do not keep your username and password 
-  * Use the bot at your own will
-  * Login message will be deleted after the message was sent so do not worry if anyone's gonna see your password
-  * For your grades, private message will send to your dm, so no need to worry about your grade being exposed
-    
