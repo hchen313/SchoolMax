@@ -50,22 +50,28 @@ public class SchoolMax{
     }
 
     public String grade(String courseNumber) throws IOException {
-        HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
-        page = gradeBook.click();
-        String wholePage = page.getVisibleText();
+        try {
+            HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
+            page = gradeBook.click();
+            String wholePage = page.getVisibleText();
 
-        if(!wholePage.contains(courseNumber)){
-            return null;
+            if (!wholePage.contains(courseNumber)) {
+                return null;
+            }
+
+            HtmlAnchor coursePage = (HtmlAnchor) page.getAnchorByText(courseNumber);
+            page = coursePage.click();
+            HtmlAnchor gradePage = (HtmlAnchor) page.getAnchorByText("Review grades for this class");
+            page = gradePage.click();
+
+            String gradePage2 = page.getBody().getVisibleText();
+            String grade = gradePage2.substring(gradePage2.indexOf("Current"), gradePage2.indexOf("Period and Term Grade"));
+            return grade;
+        } catch (StringIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            String grade = "Error";
+            return grade;
         }
-
-        HtmlAnchor coursePage = (HtmlAnchor) page.getAnchorByText(courseNumber);
-        page = coursePage.click();
-        HtmlAnchor gradePage = (HtmlAnchor) page.getAnchorByText("Review grades for this class");
-        page = gradePage.click();
-
-        String gradePage2 = page.getBody().getVisibleText();
-        String grade = gradePage2.substring(gradePage2.indexOf("Current"), gradePage2.indexOf("Period and Term Grade"));
-        return grade;
     }
 
     public void close() throws IOException {
@@ -74,35 +80,39 @@ public class SchoolMax{
     }
 
     public String checkNextYear() throws IOException {
-        HtmlAnchor change = (HtmlAnchor) page.getAnchorByText("change");
-        page = change.click();
-        HtmlInput input = page.getFirstByXPath("//*[@id=\"field_year3\"]");
-        input.setValueAttribute("2022");
-        HtmlSubmitInput button = (HtmlSubmitInput) page.getFirstByXPath("//*[@id=\"section_4\"]/tr[2]/td/input");
-        page = button.click();
-        HtmlAnchor courses = (HtmlAnchor) page.getAnchorByText("Student Course Choices");
-        page = courses.click();
-        String fullPage = page.getBody().getTextContent();
-        String firstCut = fullPage.substring(fullPage.indexOf("Your counselor"), fullPage.indexOf("Copyright"));
+        try {
+            HtmlAnchor change = (HtmlAnchor) page.getAnchorByText("change");
+            page = change.click();
+            HtmlInput input = page.getFirstByXPath("//*[@id=\"field_year3\"]");
+            input.setValueAttribute("2023");
+            HtmlSubmitInput button = (HtmlSubmitInput) page.getFirstByXPath("//*[@id=\"section_4\"]/tr[2]/td/input");
+            page = button.click();
+            HtmlAnchor courses = (HtmlAnchor) page.getAnchorByText("Student Course Choices");
+            page = courses.click();
+            String fullPage = page.getBody().getTextContent();
+            String firstCut = fullPage.substring(fullPage.indexOf("Your counselor"), fullPage.indexOf("Copyright"));
 
-        BufferedReader bufferedReader = new BufferedReader(new StringReader(firstCut));
-        String line;
-        String secondCut = "";
-        while ((line = bufferedReader.readLine()) != null){
-            if(!line.trim().isEmpty()) {
-                secondCut = secondCut + line + "\n";
+            BufferedReader bufferedReader = new BufferedReader(new StringReader(firstCut));
+            String line;
+            String secondCut = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    secondCut = secondCut + line + "\n";
+                }
             }
+            String thirdCut = secondCut.substring(secondCut.indexOf("Your"), secondCut.indexOf("document.q"));
+            String lastCut = thirdCut.replace(":", ":\n");
+            return lastCut;
         }
-        String thirdCut = secondCut.substring(secondCut.indexOf("Your"), secondCut.indexOf("document.q"));
-        String lastCut = thirdCut.replace(":", ":\n");
-        return lastCut;
+        catch (Exception e){
+            return "Schedule Not Available";
+        }
     }
 
     public ArrayList<String> checkAll() throws IOException {
         //open gradebook
         HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
         page = gradeBook.click();
-
         String all = page.getVisibleText();
         String newAll = all.substring(all.indexOf("Instructor(s)") + 15, all.lastIndexOf("(primary)"));
         String noGrade = newAll.replaceAll("\\[Grades]", "");
@@ -114,7 +124,7 @@ public class SchoolMax{
         String line;
         ArrayList<String> classCode = new ArrayList<>();
         while((line = bufferedReader.readLine()) != null){
-            if(line.length() != 0) {
+            if((line.length() != 0) && (!line.contains("LUNCH"))) {
                 int space = line.indexOf(" ");
                 classCode.add(line.substring(0, space));
             }
@@ -138,7 +148,9 @@ public class SchoolMax{
         for(int i = 0; i < every.size(); i++){
             int first = every.get(i).indexOf("Period Weighted") + 27;
             int last = every.get(i).lastIndexOf("Current") - 3;
-            every.set(i, every.get(i).substring(first, last));
+            try {
+                every.set(i, every.get(i).substring(first, last));
+            }catch (StringIndexOutOfBoundsException ignore){}
         }
 
         //open gradebook
@@ -155,7 +167,7 @@ public class SchoolMax{
         String line;
         ArrayList<String> allNames = new ArrayList<>();
         while((line = br.readLine()) != null){
-            if(!(line.startsWith("LUNCH")) && line.contains("primar")){
+            if((!(line.startsWith("LUNCH")) && line.contains("primar")) || line.contains("Released")){
                 if(!(line.trim().isEmpty())){
                     if(!(line.contains("primary"))){   //to fix the primary problem
                         line += "y)";
@@ -164,7 +176,6 @@ public class SchoolMax{
                 }
             }
         }
-
         int difference = 0;
         if(allNames.size() != every.size()){
             difference = Math.abs(allNames.size() - every.size());
@@ -194,7 +205,9 @@ public class SchoolMax{
         for(int i = 0; i < every.size(); i++){
             int first = every.get(i).indexOf(" Grade Weighted") + 27;
             int last = every.get(i).indexOf("%") + 1;
-            every.set(i, every.get(i).substring(first, last));
+            try {
+                every.set(i, every.get(i).substring(first, last));
+            }catch (StringIndexOutOfBoundsException ignore){}
         }
 
         //open gradebook
@@ -211,7 +224,7 @@ public class SchoolMax{
         String line;
         ArrayList<String> allNames = new ArrayList<>();
         while((line = br.readLine()) != null){
-            if(!(line.startsWith("LUNCH")) && line.contains("primar")){
+            if((!(line.startsWith("LUNCH")) && line.contains("primar")) || line.contains("Released")){
                 if(!(line.trim().isEmpty())){
                     if(!(line.contains("primary"))){   //to fix the primary problem
                         line += "y)";
