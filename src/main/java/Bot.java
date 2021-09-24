@@ -1,4 +1,3 @@
-import jdk.internal.misc.ScopedMemoryAccess;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -28,7 +27,6 @@ public class Bot extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent e){
         if(e.getAuthor().isBot()){return;}
         Message msg = e.getMessage();
-        String userID = String.valueOf(e.getAuthor().getIdLong());
 
         if(msg.getContentRaw().equals("-command")){
             EmbedBuilder builder = new EmbedBuilder();
