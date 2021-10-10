@@ -24,5 +24,5 @@ Uses:
       * Example: -check 123141-3
   * -info -> to see all the information given by the developer
   * -NextYear -> to check your next year's schedule
-  * to get your quarterly grade for all your classes
-  * to get your overall grade for all your classes
+  * -getAllQuarter -> to get your quarterly grade for all your classes
+  * -getAll -> to get your overall grade for all your classes
