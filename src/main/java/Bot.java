@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class Bot extends ListenerAdapter {
 
-    final static String token = "";
+    final static String token = System.getenv().get("TOKEN");
     private static int[] id = new int[1000];
     private static String[] usernameCollection = new String[1000];
     private static String[] passwordCollection = new String[1000];
