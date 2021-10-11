@@ -20,4 +20,6 @@ dependencies {
     implementation group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.50.0'
 }
 
-task stage(dependsOn: ['build','shadowJar', 'clean', 'test'])
+task stage {
+  dependsOn build
+}
