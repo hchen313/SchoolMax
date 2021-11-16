@@ -131,6 +131,41 @@ public class Bot extends ListenerAdapter {
             }
         }
 
+        if(msg.getContentRaw().startsWith("-list .")){
+            String year = msg.getContentRaw().substring(msg.getContentRaw().indexOf(".")+1);
+            //check if user is in the database, if not ask to login
+            boolean inData = inData((int) msg.getAuthor().getIdLong());
+            if(inData == false){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Please Log in");
+                msg.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
+            //retrieve id location in the id collection
+            int location = idLocation((int) msg.getAuthor().getIdLong());
+            if(location == -1){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Error");
+                msg.getChannel().sendMessage(builder.build()).queue();
+            }
+
+            try {
+                SchoolMax schoolMax = new SchoolMax();
+                schoolMax.login(usernameCollection[location], passwordCollection[location]);
+                String list = schoolMax.classesOther(year);
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Your Classes");
+                builder.setColor(Color.blue);
+                builder.setDescription(list);
+                msg.getChannel().sendMessage(builder.build()).queue();
+                schoolMax.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+
         if(msg.getContentRaw().startsWith("-check")){
             //check if user is in the database, if not ask to login
             boolean inData = inData((int) msg.getAuthor().getIdLong());
@@ -271,6 +306,72 @@ public class Bot extends ListenerAdapter {
             }
         }
 
+        if(msg.getContentRaw().equals("!getAllQuarter")){
+            //check if user is in the database, if not ask to login
+            boolean inData = inData((int) msg.getAuthor().getIdLong());
+            if(inData == false){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Please Log in");
+                msg.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
+            //retrieve id location in the id collection
+            int location = idLocation((int) msg.getAuthor().getIdLong());
+            if(location == -1){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Error");
+                msg.getChannel().sendMessage(builder.build()).queue();
+            }
+
+            try{
+                SchoolMax schoolMax = new SchoolMax();
+                schoolMax.login(usernameCollection[location], passwordCollection[location]);
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Grades-Quarter");
+                builder.setColor(Color.blue);
+                builder.setDescription(schoolMax.checkAllQuarter());
+                e.getChannel().sendMessage(builder.build()).queue();
+                schoolMax.close();
+            }catch(Exception exception){
+                exception.printStackTrace();
+            }
+        }
+        if(msg.getContentRaw().equals("!getAll")){
+            //check if user is in the database, if not ask to login
+            boolean inData = inData((int) msg.getAuthor().getIdLong());
+            if(inData == false){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Please Log in");
+                msg.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
+            //retrieve id location in the id collection
+            int location = idLocation((int) msg.getAuthor().getIdLong());
+            if(location == -1){
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setColor(Color.red);
+                builder.setDescription("Error");
+                msg.getChannel().sendMessage(builder.build()).queue();
+            }
+
+            try{
+                SchoolMax schoolMax = new SchoolMax();
+                schoolMax.login(usernameCollection[location], passwordCollection[location]);
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Grades-FY");
+                builder.setColor(Color.blue);
+                builder.setDescription(schoolMax.checkAllFY());
+                e.getChannel().sendMessage(builder.build()).queue();
+                schoolMax.close();
+            }catch(Exception exception){
+                exception.printStackTrace();
+            }
+        }
         if(msg.getContentRaw().equals("-getAll")){
             //check if user is in the database, if not ask to login
             boolean inData = inData((int) msg.getAuthor().getIdLong());
