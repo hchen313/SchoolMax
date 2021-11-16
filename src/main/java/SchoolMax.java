@@ -49,6 +49,30 @@ public class SchoolMax{
         return noPar;
     }
 
+    public String classesOther(String year) throws IOException {
+        try {
+            HtmlAnchor change = (HtmlAnchor) page.getAnchorByText("change");
+            page = change.click();
+            HtmlInput input = page.getFirstByXPath("//*[@id=\"field_year3\"]");
+            input.setValueAttribute(year);
+            HtmlSubmitInput button = (HtmlSubmitInput) page.getFirstByXPath("//*[@id=\"section_4\"]/tr[2]/td/input");
+            page = button.click();
+        }catch (Exception e){
+            return "Error";
+        }
+        //open gradebook
+        HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
+        page = gradeBook.click();
+
+        String all = page.getVisibleText();
+        String newAll = all.substring(all.indexOf("Instructor(s)") + 15, all.lastIndexOf("(primary)"));
+        String noGrade = newAll.replaceAll("\\[Grades]", "");
+        String noAssignment = noGrade.replaceAll("\\[Assignments]", "\n");
+        String noPrimary = noAssignment.replaceAll("\\(primary", "");
+        String noPar = noPrimary.replaceAll("\\)", "");
+        return noPar;
+    }
+
     public String grade(String courseNumber) throws IOException {
         try {
             HtmlAnchor gradeBook = (HtmlAnchor) page.getAnchorByText("Gradebook");
