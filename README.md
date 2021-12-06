@@ -28,7 +28,7 @@ Uses:
   * -check + course number -> to check the term and overall grade of your class of choice by using the course number (provided by "-list" command)
       * Format: -check courseNumber
       * Example: -check 123141-3
-      * ![ScreenShot](check.PNG)
+      * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/check.PNG)
   * -info -> to see all the information given by the developer
   * -NextYear -> to check your next year's schedule
   * -getAllQuarter -> to get your quarterly grade for all your classes
