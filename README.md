@@ -22,6 +22,7 @@ Uses:
   * -login + username + password -> to login to your SchoolMax account (you only have to login once)
       * Format: -login + username + password 
       * Example: -login john-smith abc12345
+      * ![Optional Text](SchoolMax/Examples/login.PNG)
   * -list -> to show all your classes (you must login to do so)
   * -check + course number -> to check the term and overall grade of your class of choice by using the course number (provided by "-list" command)
       * Format: -check courseNumber
