@@ -25,7 +25,7 @@ Uses:
       * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/login.PNG)
   * -list -> to show all your classes (you must login to do so)
       * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/list.PNG)
-  * -check + course number -> to check the term and overall grade of your class of choice by using the course number (provided by "-list" command)
+  * -check + course number -> to check the term, overall, and individual assignment grade of your class of choice by using the course number (provided by "-list" command)
       * Format: -check courseNumber
       * Example: -check 123141-3
       * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/check.PNG)
