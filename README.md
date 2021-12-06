@@ -22,9 +22,9 @@ Uses:
   * -login + username + password -> to login to your SchoolMax account (you only have to login once)
       * Format: -login + username + password 
       * Example: -login john-smith abc12345
-      * ![ScreenShot](login.PNG)
+      * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/login.PNG)
   * -list -> to show all your classes (you must login to do so)
-      * ![ScreenShot](list.PNG)
+      * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/list.PNG)
   * -check + course number -> to check the term and overall grade of your class of choice by using the course number (provided by "-list" command)
       * Format: -check courseNumber
       * Example: -check 123141-3
@@ -33,7 +33,7 @@ Uses:
   * -NextYear -> to check your next year's schedule
   * -getAllQuarter -> to get your quarterly grade for all your classes
   * -getAll -> to get your overall grade for all your classes
-      * ![ScreenShot](getAll.PNG)
+      * ![ScreenShot](https://github.com/xihuan313/SchoolMax/blob/main/Examples/getAll.PNG)
   * -list . + year -> to check your schedule for a particular year
   *  --getAllQuarter -> to show your quarterly grade in the server
   *  --getAll -> to show your yearly grade in the server
