@@ -1,5 +1,4 @@
 # SchoolMax
-This bot uses selenium. 
 
 A Discord SchoolMax Bot that logins to SchoolMax, list all the classes, check for one's next year's schedule, and check one's grade.
 
